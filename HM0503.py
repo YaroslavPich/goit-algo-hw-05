@@ -1,17 +1,22 @@
 import sys
+import re
 from pathlib import Path
 from collections import Counter
-from typing import Callable
 
 
-def load_logs(file_path: str, parse_log_line: Callable) -> list:
+def load_logs(file_path: str) -> list:
     """Loading logs from a file"""
     file_path = Path(file_path)
+    pattern = r"\d+\-\d+\-\d+\s\d+\:\d+\:\d+\s\w+\s.*$"
     try:
         with open(file_path, "r", encoding="utf-8") as file:
+            
             list_logs = [
-                parse_log_line(line) for line in file.readlines() if line.strip()
+                parse_log_line(line)
+                for line in file.readlines()
+                if line.strip() and re.match(pattern, line)
             ]
+            
             if not list_logs:
                 print("В файлі немає записів про логи!")
             return list_logs
@@ -21,16 +26,13 @@ def load_logs(file_path: str, parse_log_line: Callable) -> list:
 
 def parse_log_line(line: str) -> dict:
     """Parser log file"""
-    try:
-        log_split = line.split()
-        dict_logs = {}
-        dict_logs["date"] = log_split[0]
-        dict_logs["time"] = log_split[1]
-        dict_logs["level"] = log_split[2]
-        dict_logs["message"] = " ".join(log_split[3:])
-        return dict_logs
-    except Exception as e:
-        print(f"Помилка парсингу логів {e}")
+    log_split = line.split()
+    dict_logs = {}
+    dict_logs["date"] = log_split[0]
+    dict_logs["time"] = log_split[1]
+    dict_logs["level"] = log_split[2]
+    dict_logs["message"] = " ".join(log_split[3:])
+    return dict_logs
 
 
 def filter_logs_by_level(logs: list, level: str) -> list:
@@ -73,7 +75,7 @@ def main():
             print("Невірний шлях! Введіть вірний шлях до файлу.")
             return
         else:
-            logs = load_logs(file_open, parse_log_line)
+            logs = load_logs(file_open)
             dict_count_level = count_logs_by_level(logs)
             display_log_counts(dict_count_level)
 

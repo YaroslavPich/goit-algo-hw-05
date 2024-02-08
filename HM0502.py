@@ -4,7 +4,7 @@ from typing import Callable
 
 def generator_numbers(text_uniforn: str) -> str:
     """Parses the text, identifies all valid numbers and returns them."""
-    pattern = r"\b\d+\.\d+\b"
+    pattern = r"\s\d+\.\d+\s"
     for valid_number in re.findall(pattern, text_uniforn):
         yield valid_number
 

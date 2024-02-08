@@ -10,13 +10,13 @@ def load_logs(file_path: str) -> list:
     pattern = r"\d+\-\d+\-\d+\s\d+\:\d+\:\d+\s\w+\s.*$"
     try:
         with open(file_path, "r", encoding="utf-8") as file:
-            
+
             list_logs = [
                 parse_log_line(line)
                 for line in file.readlines()
                 if line.strip() and re.match(pattern, line)
             ]
-            
+
             if not list_logs:
                 print("В файлі немає записів про логи!")
             return list_logs
